@@ -28,5 +28,63 @@ describe("generators", function(){
 
         expect(sum).toBe(10);
     });
+
+    it("can build an iterables..", function(){
+        class Company{
+            constructor(){
+                this.employees = [];
+            }
+
+            addEmployees(...names){
+                this.employees = this.employees.concat(names);
+
+            }
+
+            *[Symbol.iterator](){
+                for(let e of this.employees){
+                    console.log(e);
+                    yield e;
+                }
+            }
+        }
+
+
+        let count = 0;
+        let company = new Company();
+        company.addEmployees("Sumon", "Sohan", "Zakir");
+
+       for(let employee of company){
+           count+=1;
+       }
+
+        expect(count).toBe(3);
+    });
+
+    it("can take a parameter from next (param)", function(){
+       
+       let range = function*(start, end){
+           let current = start;
+           while(current<=end){
+               let delta = yield current;
+              
+               current +=delta || 1; 
+           }
+       }
+
+
+        let result = [];
+        let iterator = range(1,10);
+        let next = iterator.next();
+
+        while(!next.done){
+            result.push(next.value);
+            next = iterator.next(2);
+        }
+
+        expect(result).toEqual([1,3,5,7,9]);
+    });
+
+
+
 });
 
